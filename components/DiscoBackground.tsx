@@ -45,12 +45,13 @@ function DiscoBall({ left, top, size, floatDelay, spinDuration, sparkleOffset }:
         zIndex: 0,
       }}
     >
-      {/* Light rays */}
+      {/* Light rays — z-index 3 puts them on top of the ball so rays look complete */}
       <div
         style={{
           position: 'absolute',
           top: size / 2,
           left: size / 2,
+          zIndex: 3,
           animation: `discospin ${spinDuration} linear infinite reverse`,
         }}
       >
@@ -60,13 +61,13 @@ function DiscoBall({ left, top, size, floatDelay, spinDuration, sparkleOffset }:
             style={{
               position: 'absolute',
               width: 2,
-              height: rayLength,
-              background: `linear-gradient(to bottom, ${RAY_COLORS[i]}cc, transparent)`,
+              height: rayLength * 2,
+              background: `linear-gradient(to bottom, transparent, ${RAY_COLORS[i]}cc 50%, transparent)`,
               transform: `rotate(${angle}deg)`,
-              transformOrigin: '50% 0%',
-              top: 0,
+              transformOrigin: '50% 50%',
+              top: -rayLength,
               left: -1,
-              opacity: 0.55,
+              opacity: 0.65,
             }}
           />
         ))}
