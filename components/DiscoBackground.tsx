@@ -32,7 +32,7 @@ const RAY_COLORS = ['#ff2d78', '#bf00ff', '#66ccff', '#ffffff', '#ff9900', '#ff2
 const RAY_ANGLES = [0, 45, 90, 135, 180, 225, 270, 315]
 
 function DiscoBall({ left, top, size, floatDelay, spinDuration, sparkleOffset }: typeof BALLS[0]) {
-  const rayLength = size * 2.4
+  const rayLength = size * 2.6
 
   return (
     <div
@@ -40,18 +40,38 @@ function DiscoBall({ left, top, size, floatDelay, spinDuration, sparkleOffset }:
         position: 'absolute',
         left,
         top,
+        width: size,
+        height: size,
         animation: `float 6s ease-in-out infinite`,
         animationDelay: floatDelay,
-        zIndex: 0,
       }}
     >
-      {/* Light rays — z-index 3 puts them on top of the ball so rays look complete */}
+      {/* 1. Ball image — rendered first so it's behind everything else */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/disco-ball.png"
+        alt=""
+        style={{
+          position: 'absolute',
+          width: size,
+          height: size,
+          objectFit: 'contain',
+          display: 'block',
+          top: 0,
+          left: 0,
+          animation: `discospin ${spinDuration} linear infinite`,
+          /* NO filter here — filter creates stacking context that blocks z-index */
+        }}
+      />
+
+      {/* 2. Light rays — rendered AFTER img in DOM, so they paint on top */}
       <div
         style={{
           position: 'absolute',
           top: size / 2,
           left: size / 2,
-          zIndex: 3,
+          width: 0,
+          height: 0,
           animation: `discospin ${spinDuration} linear infinite reverse`,
         }}
       >
@@ -60,20 +80,20 @@ function DiscoBall({ left, top, size, floatDelay, spinDuration, sparkleOffset }:
             key={i}
             style={{
               position: 'absolute',
-              width: 2,
+              width: 3,
               height: rayLength * 2,
-              background: `linear-gradient(to bottom, transparent, ${RAY_COLORS[i]}cc 50%, transparent)`,
+              top: -rayLength,
+              left: -1.5,
+              background: `linear-gradient(to bottom, transparent 0%, ${RAY_COLORS[i]}99 35%, ${RAY_COLORS[i]}cc 50%, ${RAY_COLORS[i]}99 65%, transparent 100%)`,
               transform: `rotate(${angle}deg)`,
               transformOrigin: '50% 50%',
-              top: -rayLength,
-              left: -1,
-              opacity: 0.65,
+              opacity: 0.7,
             }}
           />
         ))}
       </div>
 
-      {/* ✨ Sparkle stars */}
+      {/* 3. Sparkle stars — on top of everything */}
       {SPARKLE_POSITIONS.map((sp, i) => {
         const starSize = size * 0.13 + (i % 3) * 3
         const cx = size / 2 + sp.x * size * 0.72
@@ -90,30 +110,12 @@ function DiscoBall({ left, top, size, floatDelay, spinDuration, sparkleOffset }:
               animation: `${i % 2 === 0 ? 'sparkle' : 'sparkle2'} ${sp.dur} ease-in-out infinite`,
               animationDelay: `${parseFloat(sp.delay) + sparkleOffset}s`,
               filter: `drop-shadow(0 0 5px ${sp.color})`,
-              zIndex: 2,
             }}
           >
             <StarShape color={sp.color} size={starSize} />
           </div>
         )
       })}
-
-      {/* Real disco ball image — background removed via Python/PIL, so no blend tricks needed */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/disco-ball.png"
-        alt=""
-        style={{
-          width: size,
-          height: size,
-          objectFit: 'contain',
-          display: 'block',
-          position: 'relative',
-          zIndex: 1,
-          animation: `discospin ${spinDuration} linear infinite`,
-          filter: 'drop-shadow(0 8px 32px rgba(255,45,120,0.35))',
-        }}
-      />
     </div>
   )
 }
