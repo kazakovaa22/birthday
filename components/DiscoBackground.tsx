@@ -97,23 +97,30 @@ function DiscoBall({ left, top, size, floatDelay, spinDuration, sparkleOffset }:
         )
       })}
 
-      {/* Real disco ball image — mix-blend-mode:multiply makes white bg invisible on pink */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/disco-ball.png"
-        alt=""
+      {/* Real disco ball image — wrap in a div so filter and mix-blend-mode don't conflict */}
+      <div
         style={{
           width: size,
           height: size,
-          objectFit: 'contain',
-          display: 'block',
           position: 'relative',
           zIndex: 1,
-          mixBlendMode: 'multiply',
           animation: `discospin ${spinDuration} linear infinite`,
-          filter: 'drop-shadow(0 8px 32px rgba(255,45,120,0.3))',
+          filter: 'drop-shadow(0 8px 32px rgba(255,45,120,0.4))',
         }}
-      />
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/disco-ball.png"
+          alt=""
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            display: 'block',
+            mixBlendMode: 'multiply',
+          }}
+        />
+      </div>
     </div>
   )
 }
