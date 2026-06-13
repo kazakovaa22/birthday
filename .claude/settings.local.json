@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(/usr/local/bin/npm install *)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//Users/oleksandrak2/.nvm/versions/**)",
+      "Bash(ls /opt/homebrew/bin/ 2>/dev/null | grep -E 'node|npm|bun|pnpm' || ls ~/.nvm 2>/dev/null | head -5 || echo \"no node found via common paths\")",
+      "Bash(command -v node npm bun pnpm)",
+      "Read(//usr/local/**)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
