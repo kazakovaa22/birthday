@@ -55,12 +55,12 @@ function DiscoBall({ left, top, size, floatDelay, spinDuration, sparkleOffset }:
           position: 'absolute',
           width: size,
           height: size,
-          objectFit: 'contain',
+          objectFit: 'cover',
           display: 'block',
           top: 0,
           left: 0,
+          borderRadius: '50%',
           animation: `discospin ${spinDuration} linear infinite`,
-          /* NO filter here — filter creates stacking context that blocks z-index */
         }}
       />
 
