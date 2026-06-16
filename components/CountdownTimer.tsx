@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
-const TARGET = new Date('2026-06-22T18:30:00')
+const TARGET = new Date('2026-06-22T19:30:00')
 
 function getTimeLeft() {
   const diff = TARGET.getTime() - Date.now()

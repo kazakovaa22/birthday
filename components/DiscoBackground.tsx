@@ -1,9 +1,9 @@
 'use client'
 
 const BALLS = [
-  { left: '4%',  top: '2%',  size: 160, floatDelay: '0s',   spinDuration: '8s',  sparkleOffset: 0   },
-  { left: '68%', top: '0%',  size: 120, floatDelay: '2.5s', spinDuration: '11s', sparkleOffset: 3   },
-  { left: '84%', top: '18%', size: 95,  floatDelay: '1.2s', spinDuration: '9s',  sparkleOffset: 1.5 },
+  { left: '2%',  top: '1%',  size: 220, floatDelay: '0s',   spinDuration: '8s',  sparkleOffset: 0   },
+  { left: '66%', top: '0%',  size: 165, floatDelay: '2.5s', spinDuration: '11s', sparkleOffset: 3   },
+  { left: '82%', top: '16%', size: 130, floatDelay: '1.2s', spinDuration: '9s',  sparkleOffset: 1.5 },
 ]
 
 const SPARKLE_POSITIONS = [

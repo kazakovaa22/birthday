@@ -13,14 +13,14 @@ const CARDS = [
   {
     icon: '🕕',
     label: 'Час',
-    value: '18:30',
+    value: '19:30',
     sub: 'Не запізнюйся',
     accent: '#bf00ff',
   },
   {
     icon: '📍',
     label: 'Адреса',
-    value: 'TBA',
+    value: 'Домовимось потім',
     sub: 'Деталі невдовзі',
     accent: '#66ccff',
   },
