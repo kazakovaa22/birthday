@@ -6,6 +6,87 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Gift } from '@/lib/types'
 import ReservationModal from './ReservationModal'
 
+function CancelModal({ giftId, giftName, onClose, onSuccess }: { giftId: string; giftName: string; onClose: () => void; onSuccess: () => void }) {
+  const [name, setName] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!name.trim()) return
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/reservations', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gift_id: giftId, name: name.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error === 'Wrong name' ? 'Ім\'я не співпадає з тим, яке було вказано при резервації.' : 'Щось пішло не так.')
+        return
+      }
+      onSuccess()
+    } catch {
+      setError('Щось пішло не так. Спробуй ще раз.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="glass-card w-full max-w-md"
+        style={{ padding: 40, position: 'relative' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 20, background: 'none', border: 'none', color: 'rgba(45,10,30,0.45)', fontSize: 24, cursor: 'pointer', lineHeight: 1 }}>×</button>
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <span style={{ fontSize: 40 }}>😕</span>
+          <h3 className="font-display font-bold mt-3 mb-1" style={{ fontSize: 22, color: '#2d0a1e' }}>Скасувати резервацію</h3>
+          <p style={{ fontSize: 14, color: 'rgba(45,10,30,0.45)', lineHeight: 1.5 }}>{giftName}</p>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="cancel-name" style={{ display: 'block', fontSize: 13, color: 'rgba(45,10,30,0.45)', marginBottom: 8 }}>
+              Введи ім'я, яке ти вказував(ла) при резервації
+            </label>
+            <input
+              id="cancel-name"
+              className="neon-input"
+              type="text"
+              placeholder="Твоє ім'я"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              autoFocus
+              required
+              maxLength={80}
+            />
+          </div>
+          {error && (
+            <p style={{ fontSize: 13, color: '#f87171', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, padding: '10px 14px' }}>
+              {error}
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={loading || !name.trim()}
+            style={{ width: '100%', padding: '14px 24px', borderRadius: 12, fontSize: 15, fontWeight: 600, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171', cursor: loading ? 'not-allowed' : 'pointer' }}
+          >
+            {loading ? 'Скасовуємо...' : '✕ Скасувати резервацію'}
+          </button>
+        </form>
+      </motion.div>
+    </div>
+  )
+}
+
 interface Props {
   gift: Gift
   onClose: () => void
@@ -14,13 +95,22 @@ interface Props {
 
 export default function GiftModal({ gift, onClose, onReserved }: Props) {
   const [showReserve, setShowReserve] = useState(false)
+  const [showCancel, setShowCancel] = useState(false)
   const [reserved, setReserved] = useState(gift.is_reserved)
   const [success, setSuccess] = useState(false)
+  const [cancelSuccess, setCancelSuccess] = useState(false)
 
   function handleReserveSuccess() {
     setReserved(true)
     setSuccess(true)
     setShowReserve(false)
+    onReserved()
+  }
+
+  function handleCancelSuccess() {
+    setReserved(false)
+    setCancelSuccess(true)
+    setShowCancel(false)
     onReserved()
   }
 
@@ -160,6 +250,24 @@ export default function GiftModal({ gift, onClose, onReserved }: Props) {
                 </button>
               )}
 
+              {reserved && (
+                <button
+                  style={{
+                    padding: '12px 24px',
+                    borderRadius: 12,
+                    fontSize: 14,
+                    fontWeight: 600,
+                    background: 'rgba(239,68,68,0.08)',
+                    border: '1px solid rgba(239,68,68,0.25)',
+                    color: '#f87171',
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setShowCancel(true)}
+                >
+                  ✕ Скасувати резервацію
+                </button>
+              )}
+
               {gift.store_url && (
                 <a
                   href={gift.store_url}
@@ -202,6 +310,24 @@ export default function GiftModal({ gift, onClose, onReserved }: Props) {
                 🎉 Дякуємо! Ти зарезервував(ла) цей подарунок.
               </motion.div>
             )}
+
+            {cancelSuccess && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{
+                  marginTop: 20,
+                  padding: '14px 18px',
+                  background: 'rgba(239,68,68,0.08)',
+                  border: '1px solid rgba(239,68,68,0.2)',
+                  borderRadius: 12,
+                  fontSize: 14,
+                  color: '#f87171',
+                }}
+              >
+                Резервацію скасовано.
+              </motion.div>
+            )}
           </div>
         </motion.div>
       </div>
@@ -213,6 +339,14 @@ export default function GiftModal({ gift, onClose, onReserved }: Props) {
             giftName={gift.name}
             onClose={() => setShowReserve(false)}
             onSuccess={handleReserveSuccess}
+          />
+        )}
+        {showCancel && (
+          <CancelModal
+            giftId={gift.id}
+            giftName={gift.name}
+            onClose={() => setShowCancel(false)}
+            onSuccess={handleCancelSuccess}
           />
         )}
       </AnimatePresence>
